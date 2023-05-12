@@ -15,55 +15,50 @@ fn main() {
     // println!("ok")
     let mut stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
     thread::spawn(move || {
-    let hex = getclr();
         loop {
             for x in 0..1000 {
                 for y in 0..200 {
-                    print(x , y , &hex, &mut stream)
+                    print(x , y , &getclr(), &mut stream)
                 }
             }
         }
     });
     let mut stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
-    let hex = getclr();
     thread::spawn(move || {
         loop {
             for x in 0..1000 {
                 for y in 200..400 {
-                    print(x , y , &hex, &mut stream)
+                    print(x , y , &getclr(), &mut stream)
                 }
             }
         }
     });
     let mut stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
-    let hex = getclr();
     thread::spawn(move || {
         loop {
             for x in 0..1000 {
                 for y in 400..600 {
-                    print(x , y , &hex, &mut stream)
+                    print(x , y , &getclr(), &mut stream)
                 }
             }
         }
     });
     let mut stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
 
-    let hex = getclr();
     thread::spawn(move || {
         loop {
             for x in 0..1000 {
                 for y in 600..800 {
-                    print(x , y , &hex, &mut stream)
+                    print(x , y , &getclr(), &mut stream)
                 }
             }
         }
     });
     let mut stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
-    let hex = getclr();
     loop {
         for x in (0..1000).rev() {
             for y in (0..500).rev() {
-                print(x , y , &hex, &mut stream)
+                print(x , y , &getclr(), &mut stream)
             }
         }
     }
