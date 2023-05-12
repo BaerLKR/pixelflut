@@ -14,26 +14,15 @@ fn getcoorx() -> u32 {
     rand::thread_rng().gen_range(0..1080)
 }
 fn getcoory() -> u32 {
-    rand::thread_rng().gen_range(0..1800)
+    rand::thread_rng().gen_range(0..1000)
 }
 fn main() {
-    let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
-    thread::spawn(move || {
-        print(getcoorx(), getcoory(), &getclr(), &stream)
-    });   let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
-    thread::spawn(move || {
-        print(getcoorx(), getcoory(), &getclr(), &stream)
-    });   let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
-    thread::spawn(move || {
-        print(getcoorx(), getcoory(), &getclr(), &stream)
-    });   let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
-    thread::spawn(move || {
-        print(getcoorx(), getcoory(), &getclr(), &stream)
-    });
-    let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
-    thread::spawn(move || {
-        print(getcoorx(), getcoory(), &getclr(), &stream)
-    });
+    for _ in 0..25 {
+        let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
+        thread::spawn(move || {
+            print(getcoorx(), getcoory(), &getclr(), &stream)
+        }); 
+    }
     let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
     loop {
         print(getcoorx(), getcoory(), &getclr(), &stream)
