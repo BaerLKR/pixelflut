@@ -23,7 +23,7 @@ fn getmode() {
         },
         "image" | "img" => {
             img();
-        }
+        },
         _ => help(),
     };
 }
@@ -47,13 +47,11 @@ fn main() {
     getmode();
 }
 fn print(x: u32, y: u32, hex: &[u8], mut stream: &TcpStream) {
-    // let buf = format!("PX {x} {y} {hex}\n");
     let buf = format!("PX {x} {y} {:02x?}{:02x?}{:02x?}\n", hex[0], hex[1], hex[2]);
     let buffer = buf.as_bytes();
     stream.write(&buffer).expect("Error writing");
 }
 fn img() {
-    // let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
     let img = ImageReader::open("./myimage.jpg").unwrap().decode().unwrap();
     let w = img.width();
     let height = img.height();
@@ -66,8 +64,6 @@ fn img() {
         let img = ImageReader::open("./myimage.jpg").unwrap().decode().unwrap();
         let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
         thread::spawn(move || {
-            // let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
-            // let img = ImageReader::open("./myimage.jpg").unwrap().decode().unwrap();
             loop {
                 for n in img.as_rgb8().unwrap().chunks(3) {
                     c += 1;
