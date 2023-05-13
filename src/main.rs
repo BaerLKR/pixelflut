@@ -2,6 +2,7 @@ use std::io::prelude::*;
 use std::net::TcpStream;
 use rand::Rng;
 use std::thread;
+use image::io::Reader as ImageReader;
 fn getmode() {
     println!("Please enter mode:");
     let i = pixelflut::input(); 
@@ -19,7 +20,7 @@ fn getmode() {
                 print(getcoorx(), getcoory(), &getclr(), &stream)
             };
         },
-        "image" => {
+        "image" | "img" => {
             img();
         }
         _ => help(),
@@ -28,9 +29,8 @@ fn getmode() {
 fn help() {
     println!("help");
 }
-fn getclr() -> [u8; 4] {
+fn getclr() -> [u8; 3] {
     [
-        rand::thread_rng().gen_range(0..255),
         rand::thread_rng().gen_range(0..255),
         rand::thread_rng().gen_range(0..255),
         rand::thread_rng().gen_range(0..255),
@@ -44,25 +44,53 @@ fn getcoory() -> u32 {
 }
 fn main() {
     getmode();
-    for _ in 0..50 {
-        println!("Spawned tread!");
-        let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
-        thread::spawn(move || {
-            print(getcoorx(), getcoory(), &getclr(), &stream)
-        }); 
-    }
-    let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
-    loop {
-        print(getcoorx(), getcoory(), &getclr(), &stream)
-    };
-
 }
-fn print(x: u32, y: u32, hex: &[u8; 4], mut stream: &TcpStream) {
+fn print(x: u32, y: u32, hex: &[u8], mut stream: &TcpStream) {
     // let buf = format!("PX {x} {y} {hex}\n");
-    let buf = format!("PX {x} {y} {:02x?}{:02x?}{:02x?}{:02x?}\n", hex[0], hex[1], hex[2], hex[3]);
+    let buf = format!("PX {x} {y} {:02x?}{:02x?}{:02x?}\n", hex[0], hex[1], hex[2]);
     let buffer = buf.as_bytes();
     stream.write(&buffer).expect("Error writing");
 }
 fn img() {
-
+    // let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
+    let img = ImageReader::open("./myimage.png").unwrap().decode().unwrap();
+    let w = img.width();
+    let height = img.height();
+    let mut c = 0;
+    let mut l = 0;
+    for n in 0..=20 {
+        println!("Spawned thread! {n}");
+        let img = ImageReader::open("./myimage.png").unwrap().decode().unwrap();
+        let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
+        thread::spawn(move || {
+            loop {
+                for n in img.as_rgb8().unwrap().chunks(3) {
+                    c += 1;
+                    print(c+600 , l, n, &stream);
+                    if c == w {
+                        c = 0;
+                        l += 1;
+                    }
+                    if l == height {
+                        l = 0;
+                    }
+                }   
+            }
+        });
+    }
+    let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
+    let img = ImageReader::open("./myimage.png").unwrap().decode().unwrap();
+    loop {
+        for n in img.as_rgb8().unwrap().chunks(3) {
+            c += 1;
+            print(c+600 , l, n, &stream);
+            if c == w {
+                c = 0;
+                l += 1;
+            }
+            if l == height {
+                l = 0;
+            }
+        }   
+    }
 }
