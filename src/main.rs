@@ -1,4 +1,5 @@
 use std::io::prelude::*;
+use std::time;
 use std::net::TcpStream;
 use rand::Rng;
 use std::thread;
@@ -53,20 +54,24 @@ fn print(x: u32, y: u32, hex: &[u8], mut stream: &TcpStream) {
 }
 fn img() {
     // let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
-    let img = ImageReader::open("./myimage.png").unwrap().decode().unwrap();
+    let img = ImageReader::open("./myimage.jpg").unwrap().decode().unwrap();
     let w = img.width();
     let height = img.height();
     let mut c = 0;
     let mut l = 0;
-    for n in 0..=20 {
+    for n in 1..=3 {
+        let ten_millis = time::Duration::from_secs(2);
+        thread::sleep(ten_millis);
         println!("Spawned thread! {n}");
-        let img = ImageReader::open("./myimage.png").unwrap().decode().unwrap();
+        let img = ImageReader::open("./myimage.jpg").unwrap().decode().unwrap();
         let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
         thread::spawn(move || {
+            // let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
+            // let img = ImageReader::open("./myimage.jpg").unwrap().decode().unwrap();
             loop {
                 for n in img.as_rgb8().unwrap().chunks(3) {
                     c += 1;
-                    print(c+600 , l, n, &stream);
+                    print(c+20, l+20, n, &stream);
                     if c == w {
                         c = 0;
                         l += 1;
@@ -78,19 +83,6 @@ fn img() {
             }
         });
     }
-    let stream = TcpStream::connect("192.168.120.13:1337").expect("Error connecting");
-    let img = ImageReader::open("./myimage.png").unwrap().decode().unwrap();
-    loop {
-        for n in img.as_rgb8().unwrap().chunks(3) {
-            c += 1;
-            print(c+600 , l, n, &stream);
-            if c == w {
-                c = 0;
-                l += 1;
-            }
-            if l == height {
-                l = 0;
-            }
-        }   
-    }
+    pixelflut::input();
+    //scheiße, aber geht
 }
